@@ -158,7 +158,6 @@ public class ReservaService : IReservaService
         var lista = await _context.Reservas
             .Include(r => r.Maquina)
             .Where(r => r.UsuarioId == estudianteId)
-            .OrderByDescending(r => r.Fecha)
             .ToListAsync();
 
         return lista
@@ -186,9 +185,7 @@ public class ReservaService : IReservaService
             query = query.Where(r => r.Estado == estado);
         }
 
-        var lista = await query
-            .OrderByDescending(r => r.Fecha)
-            .ToListAsync();
+        var lista = await query.ToListAsync();
 
         return lista
             .OrderByDescending(r => r.Fecha)

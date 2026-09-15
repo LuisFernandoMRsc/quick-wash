@@ -13,7 +13,7 @@ public static class DbInitializer
         var hasher = new PasswordHasher<Usuario>();
 
         // 1. Usuarios Semilla
-        if (!await context.Usuarios.AnyAsync())
+        if (!await context.Usuarios.AnyAsync(u => u.Email == "personal@univalle.edu"))
         {
             var personal = new Usuario
             {
@@ -25,7 +25,26 @@ public static class DbInitializer
                 FechaRegistro = DateTime.UtcNow
             };
             personal.PasswordHash = hasher.HashPassword(personal, "Personal123!");
+            context.Usuarios.Add(personal);
+        }
 
+        if (!await context.Usuarios.AnyAsync(u => u.Email == "operador.lavanderia@univalle.edu"))
+        {
+            var operador2 = new Usuario
+            {
+                Nombre = "Mariela",
+                Apellido = "Rojas",
+                Email = "operador.lavanderia@univalle.edu",
+                CodigoEstudiante = "PERS-002",
+                Rol = Roles.Personal,
+                FechaRegistro = DateTime.UtcNow
+            };
+            operador2.PasswordHash = hasher.HashPassword(operador2, "Operador2026!");
+            context.Usuarios.Add(operador2);
+        }
+
+        if (!await context.Usuarios.AnyAsync(u => u.Email == "juan.perez@est.univalle.edu"))
+        {
             var estudiante = new Usuario
             {
                 Nombre = "Juan",
@@ -36,21 +55,10 @@ public static class DbInitializer
                 FechaRegistro = DateTime.UtcNow
             };
             estudiante.PasswordHash = hasher.HashPassword(estudiante, "Estudiante123!");
-
-            var estudiante2 = new Usuario
-            {
-                Nombre = "María",
-                Apellido = "López",
-                Email = "maria.lopez@est.univalle.edu",
-                CodigoEstudiante = "EST-74219",
-                Rol = Roles.Estudiante,
-                FechaRegistro = DateTime.UtcNow
-            };
-            estudiante2.PasswordHash = hasher.HashPassword(estudiante2, "Estudiante123!");
-
-            context.Usuarios.AddRange(personal, estudiante, estudiante2);
-            await context.SaveChangesAsync();
+            context.Usuarios.Add(estudiante);
         }
+
+        await context.SaveChangesAsync();
 
         // 2. Máquinas Lavadoras Semilla
         if (!await context.Maquinas.AnyAsync())
