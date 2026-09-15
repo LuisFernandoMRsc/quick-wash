@@ -1,0 +1,87 @@
+@model RegistroViewModel
+@{
+    ViewData["Title"] = "Registro de Estudiante";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-7 col-lg-6">
+        <div class="card border-0 shadow-sm p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="badge bg-primary bg-opacity-10 text-primary p-3 rounded-circle mb-2">
+                    <i class="bi bi-person-plus-fill fs-3"></i>
+                </div>
+                <h3 class="fw-bold">Registro Estudiantil</h3>
+                <p class="text-muted small">Exclusivo para la comunidad estudiantil de Univalle</p>
+                <div class="alert alert-info py-2 small d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>Tu correo debe terminar estrictamente en <strong>@@est.univalle.edu</strong></span>
+                </div>
+            </div>
+
+            <form asp-action="Registro" method="post" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Nombre" class="form-label fw-semibold small"></label>
+                        <input asp-for="Nombre" class="form-control" placeholder="Juan" />
+                        <span asp-validation-for="Nombre" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Apellido" class="form-label fw-semibold small"></label>
+                        <input asp-for="Apellido" class="form-control" placeholder="Pérez" />
+                        <span asp-validation-for="Apellido" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CodigoEstudiante" class="form-label fw-semibold small"></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted"><i class="bi bi-card-heading"></i></span>
+                        <input asp-for="CodigoEstudiante" class="form-control" placeholder="EST-12345" />
+                    </div>
+                    <span asp-validation-for="CodigoEstudiante" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold small"></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted"><i class="bi bi-envelope-at"></i></span>
+                        <input asp-for="Email" class="form-control" placeholder="nombre.apellido@est.univalle.edu" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="row g-2 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label fw-semibold small">Contraseña</label>
+                        <input asp-for="Password" class="form-control" placeholder="Mínimo 6 caracteres" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ConfirmPassword" class="form-label fw-semibold small">Confirmar Contraseña</label>
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Repite la contraseña" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold rounded-pill shadow-sm mb-3">
+                    Registrarme
+                </button>
+
+                <div class="text-center">
+                    <span class="text-muted small">¿Ya tienes cuenta?</span>
+                    <a asp-action="Login" class="small fw-semibold text-primary text-decoration-none ms-1">
+                        Inicia sesión aquí
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

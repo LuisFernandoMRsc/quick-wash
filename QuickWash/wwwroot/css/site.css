@@ -1,0 +1,118 @@
+:root {
+    --primary: #0284c7;
+    --primary-dark: #0369a1;
+    --primary-light: #e0f2fe;
+    --secondary: #64748b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --dark: #0f172a;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    color: #1e293b;
+    background-color: #f8fafc;
+}
+
+.card {
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--hover-shadow);
+}
+
+.badge-soft-primary {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.badge-soft-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badge-soft-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-soft-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-soft-secondary {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+/* Estado de máquinas */
+.machine-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid transparent;
+}
+
+.machine-card.operativa {
+    border-color: #cbd5e1;
+}
+
+.machine-card.en-uso {
+    border-color: #fca5a5;
+    background: linear-gradient(180deg, #fff 0%, #fff1f2 100%);
+}
+
+.machine-card.mantenimiento {
+    border-color: #e2e8f0;
+    background: #f1f5f9;
+    opacity: 0.8;
+}
+
+/* Grilla de horarios de disponibilidad */
+.slot-cell {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.15s ease;
+}
+
+.slot-disponible {
+    background-color: #ecfdf5;
+    color: #047857;
+    border: 1px dashed #6ee7b7;
+}
+
+.slot-disponible:hover {
+    background-color: #10b981;
+    color: white;
+    cursor: pointer;
+}
+
+.slot-ocupado {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.slot-mantenimiento {
+    background-color: #e2e8f0;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+}
+
+.btn-pill {
+    border-radius: 50rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+}

@@ -1,0 +1,89 @@
+@model NuevaReservaViewModel
+@{
+    ViewData["Title"] = "Agendar Reserva de Lavadora";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-8 col-lg-7">
+        <div class="card border-0 shadow-sm p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                <div class="badge bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                    <i class="bi bi-calendar-plus-fill fs-3"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">Agendar Turno de Lavado</h3>
+                    <small class="text-muted">Recuerda: Máximo 3 reservas activas y sin cruce de horarios.</small>
+                </div>
+            </div>
+
+            <form asp-action="Crear" method="post" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                <!-- Selección de Máquina -->
+                <div class="mb-3">
+                    <label asp-for="MaquinaId" class="form-label fw-semibold small"></label>
+                    <select asp-for="MaquinaId" asp-items="ViewBag.MaquinasDisponibles" class="form-select">
+                        <option value="">-- Selecciona una lavadora disponible --</option>
+                    </select>
+                    <span asp-validation-for="MaquinaId" class="text-danger small"></span>
+                </div>
+
+                <!-- Fecha y Horas -->
+                <div class="row g-2 mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="Fecha" class="form-label fw-semibold small"></label>
+                        <input asp-for="Fecha" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="Fecha" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="HoraInicio" class="form-label fw-semibold small"></label>
+                        <input asp-for="HoraInicio" type="time" class="form-control" />
+                        <span asp-validation-for="HoraInicio" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="HoraFin" class="form-label fw-semibold small"></label>
+                        <input asp-for="HoraFin" type="time" class="form-control" />
+                        <span asp-validation-for="HoraFin" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Cantidad de Prendas (Requisito añadido por el usuario) -->
+                <div class="mb-3 p-3 bg-light rounded-3 border">
+                    <label asp-for="CantidadPrendas" class="form-label fw-bold text-dark d-flex align-items-center gap-2">
+                        <i class="bi bi-basket2-fill text-primary"></i> Cantidad Estimada de Prendas
+                    </label>
+                    <div class="input-group">
+                        <input asp-for="CantidadPrendas" type="number" min="1" max="100" class="form-control" placeholder="Ej. 12" />
+                        <span class="input-group-text bg-white text-muted">piezas / prendas</span>
+                    </div>
+                    <small class="text-muted d-block mt-1">
+                        Permite al personal de lavandería preparar la máquina y dosificar el ciclo adecuado.
+                    </small>
+                    <span asp-validation-for="CantidadPrendas" class="text-danger small"></span>
+                </div>
+
+                <!-- Notas -->
+                <div class="mb-4">
+                    <label asp-for="Notas" class="form-label fw-semibold small"></label>
+                    <textarea asp-for="Notas" class="form-control" rows="2" placeholder="Opcional: Ropa blanca, prendas delicadas, edredón ligero..."></textarea>
+                    <span asp-validation-for="Notas" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <a asp-action="MisReservas" class="btn btn-outline-secondary rounded-pill px-4">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 fw-semibold shadow-sm">
+                        Confirmar y Reservar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

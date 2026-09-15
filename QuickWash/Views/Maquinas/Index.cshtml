@@ -1,0 +1,176 @@
+@model DisponibilidadViewModel
+@using QuickWash.Models
+@{
+    ViewData["Title"] = "Disponibilidad de Máquinas en Tiempo Real";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i> Disponibilidad de Máquinas
+        </h2>
+        <p class="text-muted mb-0">Consulta en vivo el estado de cada lavadora para no hacer filas innecesarias.</p>
+    </div>
+
+    <!-- Selector de Fecha -->
+    <form method="get" class="d-flex align-items-center gap-2 bg-white p-2 rounded-pill shadow-sm border">
+        <label for="fecha" class="small fw-semibold text-muted ps-2"><i class="bi bi-calendar3"></i> Fecha:</label>
+        <input type="date" id="fecha" name="fecha" value="@Model.Fecha.ToString("yyyy-MM-dd")" 
+               class="form-control form-control-sm border-0 bg-light rounded-pill" onchange="this.form.submit()" />
+        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">
+            Consultar
+        </button>
+    </form>
+</div>
+
+<!-- Resumen Rápido de Estado Actual -->
+<div class="row g-3 mb-4">
+    @foreach (var maquina in Model.Maquinas)
+    {
+        var reservaActual = Model.ReservasDelDia
+            .FirstOrDefault(r => r.MaquinaId == maquina.Id && 
+                                 r.Estado != EstadosReserva.Cancelada &&
+                                 DateTime.Now.TimeOfDay >= r.HoraInicio && 
+                                 DateTime.Now.TimeOfDay < r.HoraFin &&
+                                 Model.Fecha.Date == DateTime.Today);
+
+        var esMantenimiento = maquina.EstadoOperativo == EstadosMaquina.Mantenimiento;
+        var estaOcupadaAhora = reservaActual != null;
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card p-3 border-0 shadow-sm h-100 @(esMantenimiento ? "machine-card mantenimiento" : (estaOcupadaAhora ? "machine-card en-uso" : "machine-card operativa"))">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="badge bg-dark text-white rounded-pill px-2 py-1 small">
+                            Lavadora #@maquina.Numero.ToString("D2")
+                        </span>
+                        <h5 class="fw-bold mb-0 mt-1">@maquina.Nombre</h5>
+                        <small class="text-muted">Capacidad: @maquina.CapacidadKg kg | @maquina.Modelo</small>
+                    </div>
+                    <div>
+                        @if (esMantenimiento)
+                        {
+                            <span class="badge badge-soft-secondary"><i class="bi bi-wrench"></i> Mantenimiento</span>
+                        }
+                        else if (estaOcupadaAhora)
+                        {
+                            <span class="badge badge-soft-danger"><i class="bi bi-hourglass-split"></i> Ocupada Ahora</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-soft-success"><i class="bi bi-check-circle"></i> Disponible Ahora</span>
+                        }
+                    </div>
+                </div>
+
+                @if (estaOcupadaAhora)
+                {
+                    <div class="alert alert-danger py-1 px-2 small mb-2 mt-1">
+                        <i class="bi bi-clock"></i> En uso hasta las @reservaActual!.HoraFin.ToString(@"hh\:mm")
+                    </div>
+                }
+
+                <div class="mt-auto pt-2 d-flex justify-content-between align-items-center border-top">
+                    <small class="text-muted">@maquina.Descripcion</small>
+                    @if (!esMantenimiento && User.Identity?.IsAuthenticated == true && User.IsInRole(Roles.Estudiante))
+                    {
+                        <a asp-controller="Reservas" asp-action="Crear" 
+                           asp-route-maquinaId="@maquina.Id" 
+                           asp-route-fecha="@Model.Fecha.ToString("yyyy-MM-dd")" 
+                           class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                            Reservar
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Cuadrícula / Matriz Horaria Detallada del Día -->
+<div class="card border-0 shadow-sm p-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+        <div>
+            <h5 class="fw-bold mb-1"><i class="bi bi-calendar-week text-primary me-2"></i> Cronograma de Turnos (@Model.Fecha.ToString("dddd, dd MMMM yyyy"))</h5>
+            <small class="text-muted">Haz clic en cualquier bloque verde para agendar tu reserva sin filas.</small>
+        </div>
+        <div class="d-flex gap-3 small">
+            <span class="d-flex align-items-center gap-1"><span class="badge bg-success p-1 rounded-circle"> </span> Disponible</span>
+            <span class="d-flex align-items-center gap-1"><span class="badge bg-danger p-1 rounded-circle"> </span> Ocupada / Reservada</span>
+            <span class="d-flex align-items-center gap-1"><span class="badge bg-secondary p-1 rounded-circle"> </span> Fuera de servicio</span>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="min-width: 130px;">Máquina</th>
+                    @foreach (var franja in Model.Franjas)
+                    {
+                        <th class="small fw-semibold">@franja.Etiqueta</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var maquina in Model.Maquinas)
+                {
+                    var esMantenimiento = maquina.EstadoOperativo == EstadosMaquina.Mantenimiento;
+
+                    <tr>
+                        <td class="text-start bg-light fw-semibold">
+                            <i class="bi bi-hdd-rack text-primary me-1"></i> #@maquina.Numero.ToString("D2") - @maquina.Nombre
+                        </td>
+                        @foreach (var franja in Model.Franjas)
+                        {
+                            var reservaEnFranja = Model.ReservasDelDia
+                                .FirstOrDefault(r => r.MaquinaId == maquina.Id &&
+                                                     r.Estado != EstadosReserva.Cancelada &&
+                                                     franja.Inicio < r.HoraFin &&
+                                                     franja.Fin > r.HoraInicio);
+
+                            if (esMantenimiento)
+                            {
+                                <td class="slot-mantenimiento">
+                                    <small><i class="bi bi-wrench"></i> Fuera de servicio</small>
+                                </td>
+                            }
+                            else if (reservaEnFranja != null)
+                            {
+                                <td class="slot-ocupado">
+                                    <div class="fw-bold">@reservaEnFranja.CodigoReserva</div>
+                                    <div style="font-size: 0.7rem;">(@reservaEnFranja.Estado)</div>
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="slot-disponible" title="Disponible para reservar">
+                                    @if (User.Identity?.IsAuthenticated == true && User.IsInRole(Roles.Estudiante))
+                                    {
+                                        <a asp-controller="Reservas" asp-action="Crear" 
+                                           asp-route-maquinaId="@maquina.Id"
+                                           asp-route-fecha="@Model.Fecha.ToString("yyyy-MM-dd")"
+                                           asp-route-hora="@franja.Inicio.ToString(@"hh\:mm")"
+                                           class="text-decoration-none text-success fw-bold d-block">
+                                            Libre <i class="bi bi-arrow-right-short"></i>
+                                        </a>
+                                    }
+                                    else if (User.Identity?.IsAuthenticated != true)
+                                    {
+                                        <a asp-controller="Account" asp-action="Login" class="text-decoration-none text-success fw-bold d-block">
+                                            Libre
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success fw-bold">Libre</span>
+                                    }
+                                </td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

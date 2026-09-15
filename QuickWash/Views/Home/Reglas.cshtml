@@ -1,0 +1,103 @@
+@{
+    ViewData["Title"] = "Reglas de Negocio del Sistema";
+}
+
+<div class="container py-4">
+    <div class="text-center max-w-700 mx-auto mb-5">
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-2">
+            Normativa Operativa
+        </span>
+        <h1 class="fw-bold">Reglas de Negocio Implementadas</h1>
+        <p class="text-muted">Diseñadas para garantizar equidad, orden y disponibilidad para todos los estudiantes de la universidad.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <!-- Regla Dominio Correo -->
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 p-4 border-0 shadow-sm border-start border-4 border-primary">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="badge bg-primary text-white p-2 rounded-3 fs-5"><i class="bi bi-envelope-at"></i></span>
+                    <h5 class="fw-bold mb-0">Dominio Estudiantil Estricto</h5>
+                </div>
+                <p class="text-muted">
+                    Para registrarse como estudiante, el correo electrónico institucional debe pertenecer obligatoriamente a:
+                </p>
+                <div class="alert alert-light border fw-bold text-primary font-monospace py-2 text-center">
+                    @@est.univalle.edu
+                </div>
+                <small class="text-muted">El personal de operaciones utiliza cuentas con dominios administrativos autorizados.</small>
+            </div>
+        </div>
+
+        <!-- Regla 1 -->
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 p-4 border-0 shadow-sm border-start border-4 border-info">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="badge bg-info text-white p-2 rounded-3 fs-5"><i class="bi bi-shield-lock"></i></span>
+                    <h5 class="fw-bold mb-0">Regla 1: Sin Solapamiento</h5>
+                </div>
+                <p class="text-muted">
+                    Una máquina lavadora <strong>no puede ser reservada por más de un estudiante en el mismo horario</strong>. El sistema bloquea de manera atómica cualquier intento de choque de turnos.
+                </p>
+            </div>
+        </div>
+
+        <!-- Regla 2 -->
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 p-4 border-0 shadow-sm border-start border-4 border-warning">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="badge bg-warning text-dark p-2 rounded-3 fs-5"><i class="bi bi-collection"></i></span>
+                    <h5 class="fw-bold mb-0">Regla 2: Límite por Estudiante</h5>
+                </div>
+                <p class="text-muted">
+                    Un estudiante puede tener reservadas hasta un <strong>total de 3 máquinas simultáneamente</strong> (reservas activas en estado <em>Pendiente</em> o <em>En Proceso</em>), previniendo acaparamientos.
+                </p>
+            </div>
+        </div>
+
+        <!-- Regla 3 -->
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 p-4 border-0 shadow-sm border-start border-4 border-secondary">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="badge bg-dark text-white p-2 rounded-3 fs-5"><i class="bi bi-person-badge"></i></span>
+                    <h5 class="fw-bold mb-0">Regla 3: Control del Personal</h5>
+                </div>
+                <p class="text-muted">
+                    Únicamente el personal de lavandería puede modificar los estados del ciclo de la reserva entre:
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge badge-soft-warning">Pendiente</span>
+                    <span class="badge badge-soft-primary">Proceso</span>
+                    <span class="badge badge-soft-success">Finalizada</span>
+                    <span class="badge badge-soft-danger">Cancelada</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regla 4 -->
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 p-4 border-0 shadow-sm border-start border-4 border-danger">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="badge bg-danger text-white p-2 rounded-3 fs-5"><i class="bi bi-x-circle"></i></span>
+                    <h5 class="fw-bold mb-0">Regla 4: Cancelación Restringida</h5>
+                </div>
+                <p class="text-muted">
+                    Un estudiante <strong>solo puede cancelar sus reservas si están en estado 'Pendiente'</strong>. Una vez iniciada la operación (<em>En Proceso</em>) o <em>Finalizada</em>, no es cancelable por el alumno.
+                </p>
+            </div>
+        </div>
+
+        <!-- Cantidad de Prendas -->
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 p-4 border-0 shadow-sm border-start border-4 border-success">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="badge bg-success text-white p-2 rounded-3 fs-5"><i class="bi bi-basket2"></i></span>
+                    <h5 class="fw-bold mb-0">Registro de Prendas</h5>
+                </div>
+                <p class="text-muted">
+                    El estudiante debe declarar la <strong>cantidad estimada de prendas</strong> al registrar la reserva, lo cual permite al personal pre-calcular tiempos y preparar la carga.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

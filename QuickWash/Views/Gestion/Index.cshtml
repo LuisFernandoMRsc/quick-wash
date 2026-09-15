@@ -1,0 +1,203 @@
+@model List<Reserva>
+@using QuickWash.Models
+@{
+    ViewData["Title"] = "Panel de Control de Lavandería";
+    string fechaFiltro = ViewBag.FechaActual ?? DateTime.Today.ToString("yyyy-MM-dd");
+    string estadoFiltro = ViewBag.EstadoActual ?? "Todos";
+    string[] estados = ViewBag.EstadosPermitidos;
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <div class="badge bg-warning bg-opacity-25 text-dark fw-semibold px-3 py-1 rounded-pill mb-1">
+            <i class="bi bi-shield-check me-1"></i> Módulo Exclusivo para Personal Operador
+        </div>
+        <h2 class="fw-bold mb-0">Control de Operaciones y Reservas</h2>
+        <p class="text-muted mb-0">Supervisa la recepción de ropa, inicia ciclos de lavado y actualiza el estado de las máquinas.</p>
+    </div>
+
+    <!-- Filtros de fecha y estado -->
+    <form method="get" class="d-flex flex-wrap align-items-center gap-2 bg-white p-2 rounded-4 shadow-sm border">
+        <div>
+            <label class="small text-muted fw-semibold ps-1">Fecha:</label>
+            <input type="date" name="fecha" value="@fechaFiltro" class="form-control form-control-sm rounded-pill" onchange="this.form.submit()" />
+        </div>
+        <div>
+            <label class="small text-muted fw-semibold ps-1">Estado:</label>
+            <select name="estado" class="form-select form-select-sm rounded-pill" onchange="this.form.submit()">
+                <option value="Todos" selected="@(estadoFiltro == "Todos")">Todos los estados</option>
+                @foreach (var est in estados)
+                {
+                    <option value="@est" selected="@(estadoFiltro == est)">@est</option>
+                }
+            </select>
+        </div>
+        <div class="align-self-end">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill">Limpiar</a>
+        </div>
+    </form>
+</div>
+
+<!-- Resumen Estadístico de Operación -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card p-3 border-0 bg-white shadow-sm border-start border-4 border-warning">
+            <div class="text-muted small">Pendientes por Llegar</div>
+            <div class="h4 fw-bold mb-0 text-warning">
+                @Model.Count(r => r.Estado == EstadosReserva.Pendiente)
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 border-0 bg-white shadow-sm border-start border-4 border-primary">
+            <div class="text-muted small">En Lavado / Proceso</div>
+            <div class="h4 fw-bold mb-0 text-primary">
+                @Model.Count(r => r.Estado == EstadosReserva.Proceso)
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 border-0 bg-white shadow-sm border-start border-4 border-success">
+            <div class="text-muted small">Finalizadas Hoy</div>
+            <div class="h4 fw-bold mb-0 text-success">
+                @Model.Count(r => r.Estado == EstadosReserva.Finalizada)
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 border-0 bg-white shadow-sm border-start border-4 border-danger">
+            <div class="text-muted small">Canceladas / No asistió</div>
+            <div class="h4 fw-bold mb-0 text-danger">
+                @Model.Count(r => r.Estado == EstadosReserva.Cancelada)
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card border-0 shadow-sm p-5 text-center">
+        <div class="text-muted mb-2"><i class="bi bi-inbox fs-1"></i></div>
+        <h5 class="fw-bold">No se encontraron reservas con los filtros aplicados</h5>
+        <p class="text-muted small">Prueba cambiando la fecha o limpiando el filtro de estado.</p>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Turno</th>
+                        <th>Estudiante</th>
+                        <th>Máquina</th>
+                        <th>Horario</th>
+                        <th>Prendas</th>
+                        <th>Estado Actual</th>
+                        <th class="text-end" style="min-width: 280px;">Modificar Estado (RN-3)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="badge bg-dark text-white font-monospace px-2 py-1">
+                                    @r.CodigoReserva
+                                </span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">@r.Usuario.NombreCompleto</div>
+                                <div class="small text-muted">
+                                    <code>@r.Usuario.CodigoEstudiante</code> • @r.Usuario.Email
+                                </div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-primary">#@r.Maquina.Numero.ToString("D2")</div>
+                                <small class="text-muted">@r.Maquina.Nombre</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">@r.HoraInicio.ToString(@"hh\:mm") - @r.HoraFin.ToString(@"hh\:mm")</div>
+                                <small class="text-muted">@r.Fecha.ToString("dd/MM/yyyy")</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-primary border">
+                                    <i class="bi bi-basket2 me-1"></i> @r.CantidadPrendas prendas
+                                </span>
+                                @if (!string.IsNullOrEmpty(r.Notas))
+                                {
+                                    <div class="small text-muted" title="@r.Notas">
+                                        <i class="bi bi-chat-left-text"></i> @(r.Notas.Length > 20 ? r.Notas[..18] + "..." : r.Notas)
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                @if (r.Estado == EstadosReserva.Pendiente)
+                                {
+                                    <span class="badge badge-soft-warning"><i class="bi bi-hourglass me-1"></i> Pendiente</span>
+                                }
+                                else if (r.Estado == EstadosReserva.Proceso)
+                                {
+                                    <span class="badge badge-soft-primary"><i class="bi bi-arrow-repeat me-1"></i> En Proceso</span>
+                                }
+                                else if (r.Estado == EstadosReserva.Finalizada)
+                                {
+                                    <span class="badge badge-soft-success"><i class="bi bi-check-circle me-1"></i> Finalizada</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-soft-danger"><i class="bi bi-x-circle me-1"></i> Cancelada</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <!-- REGLA 3: El personal puede modificar únicamente el estado de las reservas -->
+                                <form asp-action="CambiarEstado" method="post" class="d-inline-flex gap-1 justify-content-end">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="reservaId" value="@r.Id" />
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+
+                                    @if (r.Estado == EstadosReserva.Pendiente)
+                                    {
+                                        <button type="submit" name="nuevoEstado" value="@EstadosReserva.Proceso" 
+                                                class="btn btn-sm btn-primary rounded-pill px-2" title="El estudiante llegó y se inició el lavado">
+                                            <i class="bi bi-play-fill"></i> Iniciar Lavado
+                                        </button>
+                                        <button type="submit" name="nuevoEstado" value="@EstadosReserva.Cancelada" 
+                                                class="btn btn-sm btn-outline-danger rounded-pill px-2" title="No asistió o canceló">
+                                            <i class="bi bi-x"></i> Cancelar
+                                        </button>
+                                    }
+                                    else if (r.Estado == EstadosReserva.Proceso)
+                                    {
+                                        <button type="submit" name="nuevoEstado" value="@EstadosReserva.Finalizada" 
+                                                class="btn btn-sm btn-success rounded-pill px-2" title="Ciclo terminado y ropa retirada">
+                                            <i class="bi bi-check2-all"></i> Finalizar
+                                        </button>
+                                        <button type="submit" name="nuevoEstado" value="@EstadosReserva.Cancelada" 
+                                                class="btn btn-sm btn-outline-danger rounded-pill px-2" title="Incidencia o falla técnica">
+                                            <i class="bi bi-x"></i> Cancelar
+                                        </button>
+                                    }
+                                    else if (r.Estado == EstadosReserva.Finalizada)
+                                    {
+                                        <span class="text-success small fw-semibold">
+                                            <i class="bi bi-check-circle-fill"></i> Ciclo Concluido
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" name="nuevoEstado" value="@EstadosReserva.Pendiente" 
+                                                class="btn btn-sm btn-outline-secondary rounded-pill px-2" title="Reactivar si fue error">
+                                            Reabrir
+                                        </button>
+                                    }
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

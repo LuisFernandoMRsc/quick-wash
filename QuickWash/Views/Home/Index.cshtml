@@ -1,0 +1,126 @@
+@using QuickWash.Models
+@{
+    ViewData["Title"] = "Lavandería Universitaria Inteligente";
+}
+
+<div class="row align-items-center py-4 g-4">
+    <div class="col-lg-7">
+        <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">
+            <i class="bi bi-sparkles me-1"></i> Optimización de Filas en Temporadas Altas
+        </div>
+        <h1 class="display-5 fw-bold text-dark mb-3">
+            Reserva tu lavadora en segundos, <span class="text-primary">cero filas universitarias</span>
+        </h1>
+        <p class="lead text-muted mb-4">
+            Visualiza en tiempo real qué máquinas están disponibles, agenda tu turno según tus horarios de clases y lava con comodidad sin perder tiempo en pasillos.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3 mb-4">
+            <a asp-controller="Maquinas" asp-action="Index" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm fw-semibold">
+                <i class="bi bi-calendar-check me-2"></i> Ver Disponibilidad en Vivo
+            </a>
+            @if (User.Identity?.IsAuthenticated == true && User.IsInRole(Roles.Estudiante))
+            {
+                <a asp-controller="Reservas" asp-action="Crear" class="btn btn-outline-primary btn-lg rounded-pill px-4 fw-semibold">
+                    <i class="bi bi-plus-circle me-2"></i> Agendar Turno
+                </a>
+            }
+            else if (User.Identity?.IsAuthenticated != true)
+            {
+                <a asp-controller="Account" asp-action="Registro" class="btn btn-outline-primary btn-lg rounded-pill px-4 fw-semibold">
+                    <i class="bi bi-person-plus me-2"></i> Crear Cuenta (@("@est.univalle.edu"))
+                </a>
+            }
+        </div>
+
+        <div class="d-flex align-items-center gap-4 text-muted small">
+            <div><i class="bi bi-check-circle-fill text-success me-1"></i> Máx. 3 reservas por estudiante</div>
+            <div><i class="bi bi-check-circle-fill text-success me-1"></i> Turnos sin solapamiento</div>
+            <div><i class="bi bi-check-circle-fill text-success me-1"></i> Cancelación online</div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="row g-3">
+            <div class="col-6">
+                <div class="card p-3 border-0 bg-white shadow-sm text-center card-hover">
+                    <div class="text-primary mb-2 fs-2"><i class="bi bi-hdd-rack"></i></div>
+                    <div class="h3 fw-bold mb-0">@ViewBag.TotalMaquinas</div>
+                    <div class="text-muted small">Lavadoras Totales</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card p-3 border-0 bg-white shadow-sm text-center card-hover">
+                    <div class="text-success mb-2 fs-2"><i class="bi bi-check2-circle"></i></div>
+                    <div class="h3 fw-bold mb-0">@ViewBag.Operativas</div>
+                    <div class="text-muted small">Operativas Hoy</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card p-3 border-0 bg-white shadow-sm text-center card-hover">
+                    <div class="text-info mb-2 fs-2"><i class="bi bi-clock-history"></i></div>
+                    <div class="h3 fw-bold mb-0">@ViewBag.ReservasHoy</div>
+                    <div class="text-muted small">Reservas para Hoy</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card p-3 border-0 bg-white shadow-sm text-center card-hover">
+                    <div class="text-warning mb-2 fs-2"><i class="bi bi-arrow-repeat"></i></div>
+                    <div class="h3 fw-bold mb-0">@ViewBag.EnProcesoHoy</div>
+                    <div class="text-muted small">En Proceso Ahora</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acceso Rápido de Demostración -->
+        <div class="card mt-3 border-primary border-opacity-25 bg-white p-3 shadow-sm">
+            <div class="fw-bold text-dark small mb-2 d-flex align-items-center gap-1">
+                <i class="bi bi-key-fill text-primary"></i> Credenciales de Prueba Rápida:
+            </div>
+            <div class="small text-muted mb-1">
+                <strong>Estudiante:</strong> <code>juan.perez@est.univalle.edu</code> | Clave: <code>Estudiante123!</code>
+            </div>
+            <div class="small text-muted">
+                <strong>Personal:</strong> <code>personal@univalle.edu</code> | Clave: <code>Personal123!</code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5 opacity-10">
+
+<!-- Sección de Pasos -->
+<div class="text-center mb-5">
+    <h2 class="fw-bold">¿Cómo funciona Quick Wash?</h2>
+    <p class="text-muted">Proceso ágil pensado para la vida estudiantil</p>
+</div>
+
+<div class="row g-4 mb-5 text-center">
+    <div class="col-md-4">
+        <div class="card h-100 p-4 border-0 shadow-sm card-hover">
+            <div class="rounded-circle bg-primary bg-opacity-10 text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <i class="bi bi-search fs-4"></i>
+            </div>
+            <h5 class="fw-bold">1. Revisa Disponibilidad</h5>
+            <p class="text-muted small">Entra a la cuadrícula de máquinas y visualiza qué lavadoras están libres en la fecha y hora que necesitas.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 p-4 border-0 shadow-sm card-hover">
+            <div class="rounded-circle bg-primary bg-opacity-10 text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <i class="bi bi-pencil-square fs-4"></i>
+            </div>
+            <h5 class="fw-bold">2. Reserva tu Turno</h5>
+            <p class="text-muted small">Indica tu número de máquina, hora y cantidad estimada de prendas. El sistema bloquea el horario al instante.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 p-4 border-0 shadow-sm card-hover">
+            <div class="rounded-circle bg-primary bg-opacity-10 text-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <i class="bi bi-qr-code-scan fs-4"></i>
+            </div>
+            <h5 class="fw-bold">3. Entrega sin Filas</h5>
+            <p class="text-muted small">Llega al horario reservado, presenta tu código al personal de lavandería e inician tu ciclo de lavado.</p>
+        </div>
+    </div>
+</div>
